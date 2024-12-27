@@ -2,7 +2,9 @@
 
 This repository contains a set of rules optimized for AI agents (particularly in Cursor's composer mode) to help query Intuition data effectively. The rules provide intelligent assistance for working with the `@0xintuition/graphql` package.
 
-## Installation
+## Getting Started
+
+### Installation
 
 1. If you already have a `.cursorrules` file:
 
@@ -11,6 +13,25 @@ This repository contains a set of rules optimized for AI agents (particularly in
 
 2. If you don't have a `.cursorrules` file:
    - Copy the `.cursorrules` file directly into your project root
+
+### Usage
+
+Once installed, you can start querying Intuition data using natural language prompts in Cursor. The rules will automatically:
+
+- Detect your framework (Next.js, Remix, or Node.js)
+- Provide appropriate setup instructions
+- Show relevant code examples
+- Guide you through error handling
+
+Example prompts to get started:
+
+```markdown
+"I want to start querying Intuition data in my Next.js app"
+"How do I fetch positions for a specific account?"
+"Show me how to query atoms and their relationships"
+```
+
+The rules are designed to be non-intrusive and only activate when specifically asking about Intuition data querying, so they won't interfere with other `.cursorrules` patterns.
 
 ## Features
 
