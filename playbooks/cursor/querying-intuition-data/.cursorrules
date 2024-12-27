@@ -1,0 +1,743 @@
+# =================================================================
+
+#
+
+# Intuition GraphQL Query Assistant Rules
+
+#
+
+# =================================================================
+
+# These rules can be combined with your existing .cursorrules file.
+
+# To use alongside your existing rules, you can either:
+
+# 1. Append this entire ruleset to your existing .cursorrules file
+
+# 2. Copy specific rules you need into your existing .cursorrules
+
+#
+
+# These rules are optimized for AI agents (particularly in Cursor's
+
+# composer mode) to help query Intuition data effectively.
+
+#
+
+# The rules are triggered by various Intuition-related queries:
+
+# - "querying intuition data"
+
+# - "using @0xintuition/graphql"
+
+# - "fetch intuition data"
+
+# - "get data from intuition"
+
+# - Entity-specific queries:
+
+# - positions (holdings in atoms/triples)
+
+# - atoms (basic building blocks)
+
+# - triples (relationships between atoms)
+
+# - events (on-chain activities)
+
+# - connections (following/follower relationships)
+
+# - stats (protocol metrics)
+
+#
+
+# Each rule provides:
+
+# - Clear explanation of the data type
+
+# - Framework-specific implementation (Next.js, Remix, Node.js)
+
+# - Both React hooks and raw query examples
+
+# - Common filtering patterns with type information
+
+# - Error handling and optimization guidance
+
+#
+
+# Note: These rules won't conflict with existing rules as they only
+
+# activate when specifically asking about Intuition data querying.
+
+# =================================================================
+
+# Framework Detection Rules
+
+when user asks about "querying intuition data" or "using @0xintuition/graphql" or "fetch intuition data" or "get data from intuition" or "how to use intuition graphql" or "how to query intuition" or "get intuition data" or "retrieve intuition data" or "access intuition data" or "work with intuition data" or "intuition graphql queries" or "intuition api" or "intuition graphql api":
+suggest "I'll help you query Intuition data. First, I need to know what framework you're using to provide the most appropriate implementation. The implementation will differ based on whether you're using:
+
+- Next.js (React with server-side rendering)
+- Remix (React with server-side rendering and loaders)
+- Express/Node.js (Server-side only with raw queries)
+
+Each framework has its own optimal patterns for data fetching, error handling, and state management."
+ask "What framework are you using? (Next.js, Remix, Express/Node.js)"
+remember framework_type as response
+
+# Framework-Specific Setup Rules
+
+when framework_type is "Next.js":
+suggest "For Next.js apps, you'll want to use the React Query hooks with prefetching in your pages. This approach ensures optimal data loading and SEO."
+show example "```typescript
+// In your page:
+import { dehydrate, QueryClient } from '@tanstack/react-query';
+import { useGetPositions, fetcher, GetPositionsDocument } from '@0xintuition/graphql';
+
+// Types for better type safety
+interface PageProps {
+dehydratedState: unknown;
+}
+
+interface QueryParams {
+limit: number;
+offset: number;
+orderBy?: Array<{ [key: string]: 'asc' | 'desc' }>;
+}
+
+// Server-side prefetching
+export async function getServerSideProps() {
+const queryClient = new QueryClient();
+
+// Define query parameters
+const queryParams: QueryParams = {
+limit: 10,
+offset: 0,
+orderBy: [{ created_at: 'desc' }]
+};
+
+// Prefetch data
+await queryClient.prefetchQuery({
+queryKey: ['get-positions', queryParams],
+queryFn: () => fetcher(GetPositionsDocument, queryParams)()
+});
+
+return {
+props: {
+dehydratedState: dehydrate(queryClient)
+}
+};
+}
+
+// In your component:
+export default function YourComponent() {
+// Use the hook with proper typing
+const { data, isLoading, error } = useGetPositions({
+variables: {
+limit: 10,
+offset: 0
+}
+});
+
+// Handle loading state
+if (isLoading) return <div>Loading...</div>;
+
+// Handle error state
+if (error) return <div>Error: {error.message}</div>;
+
+// Render data
+return (
+
+<div>
+{data?.positions.map(position => (
+<div key={position.id}>
+{/_ Position details _/}
+</div>
+))}
+</div>
+);
+}```"
+
+when framework_type is "Remix":
+suggest "For Remix apps, you can use React Query with our loader pattern for prefetching. This approach provides optimal server-side rendering and hydration."
+show example "```typescript
+import { json, type LoaderFunctionArgs } from '@remix-run/node';
+import { useLoaderData, useRouteError, isRouteErrorResponse } from '@remix-run/react';
+import { QueryClient, dehydrate } from '@tanstack/react-query';
+import { useGetPositions, fetcher, GetPositionsDocument } from '@0xintuition/graphql';
+
+// Types for better type safety
+interface QueryParams {
+limit: number;
+offset: number;
+orderBy?: Array<{ [key: string]: 'asc' | 'desc' }>;
+}
+
+interface LoaderData {
+dehydratedState: unknown;
+initialParams: QueryParams;
+}
+
+// Loader with error handling
+export async function loader({ request }: LoaderFunctionArgs) {
+try {
+const queryClient = new QueryClient();
+
+    // Define query parameters
+    const queryParams: QueryParams = {
+      limit: 10,
+      offset: 0,
+      orderBy: [{ created_at: 'desc' }]
+    };
+
+    // Prefetch data
+    await queryClient.prefetchQuery({
+      queryKey: ['get-positions', queryParams],
+      queryFn: () => fetcher(GetPositionsDocument, queryParams)()
+    });
+
+    return json<LoaderData>({
+      dehydratedState: dehydrate(queryClient),
+      initialParams: queryParams
+    });
+
+} catch (error) {
+throw json(
+{ message: 'Failed to load positions' },
+{ status: 500 }
+);
+}
+}
+
+// Error boundary component
+export function ErrorBoundary() {
+const error = useRouteError();
+
+if (isRouteErrorResponse(error)) {
+return (
+
+<div>
+<h1>Error {error.status}</h1>
+<p>{error.data.message}</p>
+</div>
+);
+}
+
+return (
+
+<div>
+<h1>Error</h1>
+<p>An unexpected error occurred</p>
+</div>
+);
+}
+
+// Main component with proper typing
+export default function YourComponent() {
+const { initialParams } = useLoaderData<typeof loader>();
+
+const { data, isLoading, error } = useGetPositions({
+variables: initialParams
+});
+
+// Handle loading state
+if (isLoading) return <div>Loading...</div>;
+
+// Handle error state
+if (error) return <div>Error: {error.message}</div>;
+
+// Render data
+return (
+
+<div>
+{data?.positions.map(position => (
+<div key={position.id}>
+{/_ Position details _/}
+</div>
+))}
+</div>
+);
+}```"
+
+when framework_type is "Express" or framework_type is "Node.js":
+suggest "For server-side Node.js applications, you'll want to use the raw GraphQL queries. Here's how to set up type-safe queries with error handling:"
+show example "```typescript
+import { graphQLClient, GetPositionsDocument, type GetPositionsQuery, type GetPositionsQueryVariables } from '@0xintuition/graphql';
+import { GraphQLError } from 'graphql';
+
+// Types for better error handling
+interface GraphQLErrorResponse {
+message: string;
+locations?: { line: number; column: number }[];
+path?: string[];
+}
+
+// Helper to handle GraphQL errors
+function handleGraphQLError(error: unknown) {
+if (error instanceof GraphQLError) {
+console.error('GraphQL Error:', error.message);
+return { error: error.message };
+}
+if (error instanceof Error) {
+console.error('Network/Runtime Error:', error.message);
+return { error: 'An unexpected error occurred' };
+}
+return { error: 'Unknown error occurred' };
+}
+
+// Example Express route handler with error handling
+app.get('/positions', async (req, res) => {
+try {
+// Type-safe query parameters
+const queryParams: GetPositionsQueryVariables = {
+limit: Number(req.query.limit) || 10,
+offset: Number(req.query.offset) || 0,
+orderBy: [{ created_at: 'desc' }],
+where: req.query.accountId ? {
+account: {
+id: { \_eq: req.query.accountId }
+}
+} : undefined
+};
+
+    // Execute query with type safety
+    const data = await graphQLClient.request<GetPositionsQuery, GetPositionsQueryVariables>(
+      GetPositionsDocument,
+      queryParams
+    );
+
+    // Return successful response
+    return res.json({
+      success: true,
+      data: data.positions,
+      total: data.total?.aggregate?.count || 0
+    });
+
+} catch (error) {
+// Handle different types of errors
+const errorResponse = handleGraphQLError(error);
+return res.status(500).json({
+success: false,
+...errorResponse
+});
+}
+});```"
+
+# Query Type Rules
+
+when user asks about "positions" or "getting positions" or "query positions" or "fetch positions" or "position data" or "position queries" or "holdings" or "get holdings" or "find positions" or "search positions" or "list positions" or "position details" or "position information" or "get account positions" or "fetch account holdings" or "vault positions" or "account holdings" or "wallet positions" or "wallet holdings" or "position balance" or "holding balance" or "position amount" or "holding amount" or "position ownership" or "holding ownership" or "who owns" or "ownership details" or "vault ownership" or "atom holdings" or "triple holdings":
+suggest "Positions represent holdings in atoms or triples. They are the core data structure that:
+
+- Links accounts to vaults (either atom vaults or triple vaults)
+- Contains share amounts showing ownership levels
+- Tracks creation and modification timestamps
+- Provides relationships to the underlying atoms or triples
+
+Would you like to use React hooks (for Next.js/Remix) or raw queries (for Node.js/server-side)?"
+
+when user asks about "atoms" or "getting atoms" or "query atoms" or "fetch atoms" or "atom data" or "atom queries" or "entities" or "get entities" or "find atoms" or "search atoms" or "list atoms" or "atom details" or "atom information" or "get atom by id" or "fetch atom details" or "atom relationships" or "atom metadata" or "atom properties" or "atom search" or "find entities" or "entity search" or "search entities" or "find items" or "search items" or "get items" or "fetch items" or "item details" or "entity details" or "atom label" or "entity label" or "atom name" or "entity name" or "atom creator" or "entity creator" or "created atoms" or "created entities" or "atom image" or "entity image":
+suggest "Atoms are the foundational entities in Intuition that can be connected through relationships (triples). They have:
+
+Properties:
+
+- Unique identifier
+- Label (display name)
+- Optional image URL
+- Creation timestamp
+- Creator information
+
+Relationships:
+
+- Can be connected via triples (as subject, predicate, or object)
+- Have their own vault for positions
+- Can be owned/held through positions
+
+Common Use Cases:
+
+1. Entity Search
+
+   - Search by label
+   - Filter by creator
+   - Find by relationship
+
+2. Relationship Building
+
+   - Use as subjects in triples
+   - Use as predicates (verbs)
+   - Use as objects
+
+3. Position Management
+   - View holders
+   - Check ownership
+   - Track share distribution
+
+Would you like to use React hooks (for Next.js/Remix) or raw queries (for Node.js/server-side)?"
+
+when user asks about "triples" or "getting triples" or "query triples" or "fetch triples" or "triple data" or "triple queries" or "relationships" or "get relationships" or "find triples" or "search triples" or "list triples" or "triple details" or "triple information" or "get triple by id" or "fetch triple details" or "triple relationships" or "triple metadata" or "triple properties" or "triple search" or "find relationships" or "relationship search" or "semantic relationships" or "atom connections" or "entity relationships" or "connection details" or "relationship details" or "relationship type" or "connection type" or "relationship metadata" or "connection metadata" or "subject object pairs" or "subject predicate object" or "relationship direction" or "connection direction" or "relationship structure" or "semantic structure" or "semantic link" or "semantic connection":
+suggest "Triples are semantic relationships between atoms, following a Subject -> Predicate -> Object structure. They provide:
+
+Structure:
+
+- Subject (the atom doing something)
+- Predicate (the action or relationship type)
+- Object (the target of the action/relationship)
+
+Properties:
+
+- Unique identifier
+- Creation timestamp
+- Creator information
+- Own vault for positions
+
+Common Use Cases:
+
+1. Relationship Queries
+
+   - Find connections between atoms
+   - Search by relationship type
+   - Get all relationships for an atom
+
+2. Social Connections
+
+   - Following relationships
+   - Group memberships
+   - Content attribution
+
+3. Semantic Networks
+   - Build knowledge graphs
+   - Create content hierarchies
+   - Establish entity relationships
+
+Would you like to use React hooks (for Next.js/Remix) or raw queries (for Node.js/server-side)?"
+
+when user asks about "events" or "getting events" or "query events" or "fetch events" or "event data" or "event queries" or "activities" or "get activities" or "find events" or "search events" or "list events" or "event details" or "event information" or "get event by id" or "fetch event details" or "event history" or "activity history" or "transaction history" or "on-chain events" or "protocol events" or "user activity" or "account activity" or "recent events" or "latest events" or "event timeline" or "activity timeline" or "transaction timeline" or "event log" or "activity log" or "transaction log" or "event type" or "activity type" or "transaction type" or "event filter" or "activity filter" or "transaction filter":
+suggest "Events track on-chain activities in Intuition. They represent:
+
+Types of Events:
+
+- Mints (new atom/triple creation)
+- Transfers (position transfers)
+- Protocol actions (system events)
+
+Properties:
+
+- Event type
+- Block timestamp
+- Block number
+- Transaction hash
+- From/to addresses
+- Additional metadata
+
+Common Use Cases:
+
+1. Activity Feeds
+
+   - Recent protocol activity
+   - User-specific history
+   - Filtered by event type
+
+2. Transaction History
+
+   - Track mints
+   - Follow transfers
+   - Monitor protocol actions
+
+3. Analytics
+   - Activity volume
+   - User engagement
+   - Protocol growth
+
+Would you like to use React hooks (for Next.js/Remix) or raw queries (for Node.js/server-side)?"
+
+when user asks about "connections" or "getting connections" or "query connections" or "fetch connections" or "connection data" or "connection queries" or "social" or "get social" or "find connections" or "search connections" or "list connections" or "connection details" or "connection information" or "get followers" or "get following" or "follower list" or "following list" or "social graph" or "social connections" or "social relationships" or "followers" or "following" or "social network" or "network connections" or "network graph" or "follower count" or "following count" or "social stats" or "network stats" or "connection strength" or "relationship strength" or "social influence" or "network influence":
+suggest "Connections represent social relationships between accounts in Intuition. They are built using special predicates and provide:
+
+Structure:
+
+- Following relationships (who follows whom)
+- Follower relationships (who is followed by whom)
+- Share amounts (strength of connection)
+
+Properties:
+
+- Connection direction
+- Share amount
+- Timestamp
+- Account details
+
+Common Use Cases:
+
+1. Social Graph
+
+   - Get followers
+   - Get following
+   - Calculate connection strength
+
+2. Discovery
+
+   - Find mutual connections
+   - Explore network
+   - Suggest connections
+
+3. Analytics
+   - Connection counts
+   - Network growth
+   - Engagement metrics
+
+Would you like to use React hooks (for Next.js/Remix) or raw queries (for Node.js/server-side)?"
+
+when user asks about "stats" or "getting stats" or "query stats" or "fetch stats" or "statistics" or "metrics" or "protocol stats" or "get metrics" or "find stats" or "search stats" or "list stats" or "stat details" or "stat information" or "get statistics" or "fetch metrics" or "analytics" or "protocol metrics" or "user stats" or "account stats" or "position stats" or "usage stats" or "growth stats" or "trend stats" or "historical stats" or "time-based stats" or "aggregate stats" or "summary stats" or "total stats" or "count stats" or "metric trends" or "stat trends" or "usage trends" or "growth trends":
+suggest "Stats provide aggregate metrics about the Intuition protocol. They include:
+
+Types of Stats:
+
+- Protocol-wide metrics
+- Account-specific stats
+- Position-type counts
+- Time-based analytics
+
+Properties:
+
+- Total counts
+- Aggregate sums
+- Growth metrics
+- Usage statistics
+
+Common Use Cases:
+
+1. Protocol Overview
+
+   - Total atoms/triples
+   - Total positions
+   - Active accounts
+
+2. Account Analytics
+
+   - Position counts
+   - Creation stats
+   - Activity metrics
+
+3. Growth Tracking
+   - Time-series data
+   - Usage trends
+   - Network growth
+
+Would you like to use React hooks (for Next.js/Remix) or raw queries (for Node.js/server-side)?"
+
+# Combined Query Patterns
+
+when user asks about "combining queries" or "multiple queries" or "query combination" or "fetch multiple" or "combined data" or "related data" or "query relationships" or "fetch related" or "connected data" or "data relationships" or "query together" or "fetch together" or "joint queries" or "related queries" or "profile data" or "full profile" or "complete data" or "all data" or "everything about" or "full details" or "complete details" or "related information" or "connected information" or "linked data" or "data connections" or "data links" or "data associations" or "associated data":
+suggest "You can combine multiple Intuition queries to fetch related data efficiently. Common patterns include:
+
+1. Entity with Relationships
+
+   - Fetch atom details
+   - Get related triples
+   - Include positions
+     Example use case: Profile page with user's content and connections
+
+2. Social Graph with Activity
+
+   - Get connections
+   - Fetch recent events
+   - Include position details
+     Example use case: Social feed with activity
+
+3. Stats with Details
+   - Fetch aggregate stats
+   - Get specific entities
+   - Include latest activity
+     Example use case: Dashboard with metrics and recent activity
+
+Would you like to see examples of combining queries using React hooks or raw queries?"
+
+# Client Configuration Rules
+
+when user asks about "configuring client" or "api url" or "graphql endpoint":
+suggest "The GraphQL package comes pre-configured with our production API endpoint, so you typically don't need to configure anything. However, if you need to override the default API URL (for example, for development or testing), you can use configureClient. Make sure to do this at the top level of your application:"
+show example "```typescript
+// For Remix: in your root.tsx
+// For Next.js: in your top-level layout or \_app.tsx
+// For Node.js/Express: at the top of your app entry point (e.g., app.ts)
+
+import { configureClient } from '@0xintuition/graphql';
+
+// Only use this if you need to override the default API URL
+configureClient({
+url: 'https://your-custom-endpoint.com/graphql'
+});
+
+// The default configuration is already set up for production use,
+// so you don't need to call configureClient unless you have a specific reason
+
+// Example for Remix root.tsx:
+export default function App() {
+// Configure client once at the app root
+useEffect(() => {
+if (process.env.CUSTOM_GRAPHQL_URL) {
+configureClient({
+url: process.env.CUSTOM_GRAPHQL_URL
+});
+}
+}, []);
+
+return (
+
+<html>
+{/_ Your app content _/}
+</html>
+);
+}
+
+// Example for Next.js \_app.tsx or layout.tsx:
+export default function RootLayout({ children }) {
+// Configure client once at the app root
+useEffect(() => {
+if (process.env.CUSTOM_GRAPHQL_URL) {
+configureClient({
+url: process.env.CUSTOM_GRAPHQL_URL
+});
+}
+}, []);
+
+return <>{children}</>;
+}
+
+// Example for Node.js/Express app.ts:
+import express from 'express';
+import { configureClient } from '@0xintuition/graphql';
+
+// Configure client at app startup
+if (process.env.CUSTOM_GRAPHQL_URL) {
+configureClient({
+url: process.env.CUSTOM_GRAPHQL_URL
+});
+}
+
+const app = express();
+// ... rest of your Express app setup```"
+
+# Provider Setup Rules
+
+when user asks about "setting up providers" or "react query provider" or "query client provider":
+suggest "To use our hooks with React Query, you'll need to set up the QueryClientProvider at the root of your app. Here's how to do it:"
+show example "```typescript
+// providers.tsx (or .client/providers.tsx for Remix)
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+
+// Create a client
+const queryClient = new QueryClient({
+defaultOptions: {
+queries: {
+// Default options for all queries
+staleTime: 1000 _ 60, // 1 minute
+cacheTime: 1000 _ 60 \* 5, // 5 minutes
+refetchOnWindowFocus: false,
+retry: 1
+}
+}
+});
+
+// For Next.js: In your \_app.tsx or layout.tsx
+export default function App({ children }) {
+return (
+<QueryClientProvider client={queryClient}>
+{children}
+{process.env.NODE_ENV === 'development' && <ReactQueryDevtools />}
+</QueryClientProvider>
+);
+}
+
+// For Remix: In your root.tsx
+import { withReactQuery } from './providers';
+
+// Wrap your app with the provider
+export default withReactQuery(
+function App() {
+return (
+
+<html>
+<head>
+<Meta />
+<Links />
+</head>
+<body>
+<Outlet />
+<ScrollRestoration />
+<Scripts />
+<LiveReload />
+</body>
+</html>
+);
+}
+);
+
+// providers.tsx helper for Remix
+import { useState } from 'react';
+
+export function withReactQuery(Component: React.ComponentType) {
+return function WithReactQuery() {
+const [queryClient] = useState(
+() =>
+new QueryClient({
+defaultOptions: {
+queries: {
+staleTime: 1000 _ 60,
+cacheTime: 1000 _ 60 \* 5,
+refetchOnWindowFocus: false,
+retry: 1
+}
+}
+})
+);
+
+    return (
+      <QueryClientProvider client={queryClient}>
+        <Component />
+        {process.env.NODE_ENV === 'development' && <ReactQueryDevtools />}
+      </QueryClientProvider>
+    );
+
+};
+}
+
+// For Node.js/Express:
+// No provider needed since you'll be using raw document queries```"
+
+# Error Handling Rules
+
+when user mentions "error" or "handling errors":
+suggest "Here's how to handle errors with the GraphQL queries:"
+show example "`typescript
+const { data, error, isError } = useGetPositions({
+  variables: {
+    limit: 10
+  },
+  onError: (error) => {
+    console.error('Error fetching positions:', error);
+  }
+});`"
+
+# Optimization Rules
+
+when user asks about "caching" or "optimizing queries":
+suggest "The GraphQL package uses React Query for built-in caching. Here's how to configure it:"
+show example "`typescript
+const { data } = useGetPositions({
+  variables: {
+    limit: 10
+  },
+  staleTime: 1000 * 60, // Data stays fresh for 1 minute
+  cacheTime: 1000 * 60 * 5 // Cache persists for 5 minutes
+});`"
+
+# Real-time Updates Rules
+
+when user asks about "real-time" or "live updates":
+suggest "You can use React Query's refetch and polling capabilities:"
+show example "`typescript
+const { data } = useGetPositions({
+  variables: {
+    limit: 10
+  },
+  refetchInterval: 5000 // Polls every 5 seconds
+});`"
