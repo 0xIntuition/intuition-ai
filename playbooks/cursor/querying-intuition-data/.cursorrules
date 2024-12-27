@@ -8,6 +8,30 @@
 
 # =================================================================
 
+#
+
+# Prerequisites:
+
+# 1. Install the @0xintuition/graphql package:
+
+# npm install @0xintuition/graphql
+
+# or
+
+# yarn add @0xintuition/graphql
+
+# 2. Install React Query (if using React):
+
+# npm install @tanstack/react-query
+
+# or
+
+# yarn add @tanstack/react-query
+
+# Package Documentation:
+
+# - https://www.npmjs.com/package/@0xintuition/graphql
+
 # These rules can be combined with your existing .cursorrules file.
 
 # To use alongside your existing rules, you can either:
@@ -562,7 +586,7 @@ import { configureClient } from '@0xintuition/graphql';
 
 // Only use this if you need to override the default API URL
 configureClient({
-url: 'https://your-custom-endpoint.com/graphql'
+apiUrl: 'https://your-custom-endpoint.com/graphql'
 });
 
 // The default configuration is already set up for production use,
@@ -574,7 +598,7 @@ export default function App() {
 useEffect(() => {
 if (process.env.CUSTOM_GRAPHQL_URL) {
 configureClient({
-url: process.env.CUSTOM_GRAPHQL_URL
+apiUrl: process.env.CUSTOM_GRAPHQL_URL
 });
 }
 }, []);
@@ -593,7 +617,7 @@ export default function RootLayout({ children }) {
 useEffect(() => {
 if (process.env.CUSTOM_GRAPHQL_URL) {
 configureClient({
-url: process.env.CUSTOM_GRAPHQL_URL
+apiUrl: process.env.CUSTOM_GRAPHQL_URL
 });
 }
 }, []);
@@ -608,12 +632,99 @@ import { configureClient } from '@0xintuition/graphql';
 // Configure client at app startup
 if (process.env.CUSTOM_GRAPHQL_URL) {
 configureClient({
-url: process.env.CUSTOM_GRAPHQL_URL
+apiUrl: process.env.CUSTOM_GRAPHQL_URL
 });
 }
 
 const app = express();
 // ... rest of your Express app setup```"
+
+# Schema Validation Rules
+
+when user asks about "schema" or "types" or "fields" or "available queries" or "query fields" or "available mutations" or "mutation fields" or "type definitions" or "graphql schema":
+suggest "The GraphQL package provides type-safe queries based on the Intuition schema. Here are the key types and fields available:
+
+1. Positions
+
+   - id: ID
+   - amount: String
+   - created_at: DateTime
+   - account: Account
+   - vault: Vault
+
+2. Atoms
+
+   - id: ID
+   - label: String
+   - image_url: String (optional)
+   - created_at: DateTime
+   - creator: Account
+
+3. Triples
+
+   - id: ID
+   - subject: Atom
+   - predicate: Atom
+   - object: Atom
+   - created_at: DateTime
+   - creator: Account
+
+4. Events
+
+   - id: ID
+   - type: EventType
+   - block_timestamp: DateTime
+   - block_number: Int
+   - transaction_hash: String
+   - from_address: String
+   - to_address: String
+
+5. Accounts
+   - id: ID
+   - address: String
+   - created_at: DateTime
+
+Would you like to see example queries using these types?"
+
+# Query Validation Rules
+
+when user asks about "query validation" or "type checking" or "schema validation" or "validate query" or "check types":
+suggest "To ensure your queries use valid fields from the schema:
+
+1. Use the generated types from @0xintuition/graphql:
+
+   ```typescript
+   import {
+     GetAtomsQuery,
+     GetAtomsQueryVariables,
+     GetPositionsQuery,
+     GetPositionsQueryVariables,
+     // etc...
+   } from '@0xintuition/graphql'
+   ```
+
+2. Use the provided hooks which are already typed:
+
+   ```typescript
+   import {
+     useGetAtoms,
+     useGetPositions,
+     useGetTriples,
+     // etc...
+   } from '@0xintuition/graphql'
+   ```
+
+3. For raw queries, use the provided documents:
+   ```typescript
+   import {
+     GetAtomsDocument,
+     GetPositionsDocument,
+     GetTriplesDocument,
+     // etc...
+   } from '@0xintuition/graphql'
+   ```
+
+The package provides complete type safety and will show TypeScript errors if you try to access fields that don't exist in the schema."
 
 # Provider Setup Rules
 
@@ -707,37 +818,209 @@ retry: 1
 
 when user mentions "error" or "handling errors":
 suggest "Here's how to handle errors with the GraphQL queries:"
-show example "`typescript
+show example "```typescript
+// Using schema-valid fields
 const { data, error, isError } = useGetPositions({
-  variables: {
-    limit: 10
-  },
-  onError: (error) => {
-    console.error('Error fetching positions:', error);
-  }
-});`"
+variables: {
+where: {
+account: {
+id: { \_eq: 'account-id' }
+}
+}
+},
+onError: (error) => {
+// Handle specific error types
+if (error.message.includes('not found')) {
+console.error('Account not found:', error);
+} else if (error.message.includes('unauthorized')) {
+console.error('Authorization error:', error);
+} else {
+console.error('Error fetching positions:', error);
+}
+}
+});
+
+// Type-safe error handling
+if (error) {
+return <div>Error: {error.message}</div>;
+}
+
+// Type-safe data access
+return (
+
+  <div>
+    {data?.positions.map(position => (
+      <div key={position.id}>
+        <p>Amount: {position.amount}</p>
+        <p>Created: {position.created_at}</p>
+      </div>
+    ))}
+  </div>
+);
+```"
 
 # Optimization Rules
 
 when user asks about "caching" or "optimizing queries":
-suggest "The GraphQL package uses React Query for built-in caching. Here's how to configure it:"
-show example "`typescript
-const { data } = useGetPositions({
-  variables: {
-    limit: 10
-  },
-  staleTime: 1000 * 60, // Data stays fresh for 1 minute
-  cacheTime: 1000 * 60 * 5 // Cache persists for 5 minutes
-});`"
+suggest "The GraphQL package uses React Query for built-in caching. Here's how to configure it with schema-valid fields:"
+show example "```typescript
+// Using schema-valid fields
+const { data } = useGetAtoms({
+variables: {
+where: {
+label: { \_ilike: '%search%' }
+}
+},
+// Configure caching
+staleTime: 1000 _ 60, // Data stays fresh for 1 minute
+cacheTime: 1000 _ 60 \* 5, // Cache persists for 5 minutes
+// Configure refetching
+refetchOnWindowFocus: false,
+refetchOnMount: false,
+refetchOnReconnect: false
+});
+
+// Type-safe data access
+return (
+
+  <div>
+    {data?.atoms.map(atom => (
+      <div key={atom.id}>
+        <p>Label: {atom.label}</p>
+        {atom.image_url && <img src={atom.image_url} alt={atom.label} />}
+        <p>Created: {atom.created_at}</p>
+      </div>
+    ))}
+  </div>
+);
+```"
 
 # Real-time Updates Rules
 
 when user asks about "real-time" or "live updates":
-suggest "You can use React Query's refetch and polling capabilities:"
-show example "`typescript
+suggest "You can use React Query's refetch and polling capabilities with schema-valid fields:"
+show example "```typescript
+// Using schema-valid fields
+const { data } = useGetEvents({
+variables: {
+where: {
+block_timestamp: { \_gte: 'timestamp' }
+}
+},
+// Configure polling
+refetchInterval: 5000, // Poll every 5 seconds
+refetchIntervalInBackground: false // Only poll when tab is focused
+});
+
+// Type-safe data access
+return (
+
+  <div>
+    {data?.events.map(event => (
+      <div key={event.id}>
+        <p>Type: {event.type}</p>
+        <p>Block: {event.block_number}</p>
+        <p>Transaction: {event.transaction_hash}</p>
+      </div>
+    ))}
+  </div>
+);
+```"
+
+# Query Examples
+
+when user asks about "example queries" or "query examples" or "how to query":
+suggest "Here are some example queries using fields from our schema:
+
+1. Fetch Positions:
+
+```typescript
 const { data } = useGetPositions({
   variables: {
-    limit: 10
+    where: {
+      account: {
+        id: { _eq: 'account-id' },
+      },
+    },
   },
-  refetchInterval: 5000 // Polls every 5 seconds
-});`"
+})
+
+// Access typed data
+data?.positions.map((position) => {
+  console.log(position.id)
+  console.log(position.amount)
+  console.log(position.created_at)
+  console.log(position.account.id)
+  console.log(position.vault.id)
+})
+```
+
+2. Fetch Atoms:
+
+```typescript
+const { data } = useGetAtoms({
+  variables: {
+    where: {
+      label: { _ilike: '%search%' },
+    },
+  },
+})
+
+// Access typed data
+data?.atoms.map((atom) => {
+  console.log(atom.id)
+  console.log(atom.label)
+  console.log(atom.image_url)
+  console.log(atom.created_at)
+  console.log(atom.creator.id)
+})
+```
+
+3. Fetch Triples:
+
+```typescript
+const { data } = useGetTriples({
+  variables: {
+    where: {
+      subject: {
+        id: { _eq: 'atom-id' },
+      },
+    },
+  },
+})
+
+// Access typed data
+data?.triples.map((triple) => {
+  console.log(triple.id)
+  console.log(triple.subject.id)
+  console.log(triple.predicate.id)
+  console.log(triple.object.id)
+  console.log(triple.created_at)
+  console.log(triple.creator.id)
+})
+```
+
+4. Fetch Events:
+
+```typescript
+const { data } = useGetEvents({
+  variables: {
+    where: {
+      block_timestamp: { _gte: 'timestamp' },
+    },
+  },
+})
+
+// Access typed data
+data?.events.map((event) => {
+  console.log(event.id)
+  console.log(event.type)
+  console.log(event.block_timestamp)
+  console.log(event.block_number)
+  console.log(event.transaction_hash)
+  console.log(event.from_address)
+  console.log(event.to_address)
+})
+```
+
+All fields shown in these examples are guaranteed to exist in the schema. The TypeScript compiler will catch any attempts to access fields that don't exist."
