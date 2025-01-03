@@ -1,3 +1,23 @@
+# Intuition: The Trust Protocol - Extended Technical Specification
+
+@metadata {
+  version: "1.0.0",
+  type: "technical_specification",
+  scope: "implementation",
+  intended_readers: ["developers", "integrators", "ai_agents"],
+  semantic_version: "1.0.0-alpha"
+}
+
+> Original whitepaper: [Intuition Whitepaper](https://github.com/0xIntuition/intuition-whitepaper/blob/main/intuition_whitepaper.pdf)
+
+## Abstract
+
+@section_summary {
+  purpose: "Technical overview of the Intuition protocol",
+  key_components: ["trust_computation", "economic_model", "governance"],
+  relationships: ["semantic_web", "blockchain", "reputation_systems"]
+}
+
 [Current content of llms.txt goes here] 
 
 ## Human-AI Collaboration Patterns
@@ -108,3 +128,202 @@ interface InteractionPattern {
    - Update best practices
 
 [End of collaboration patterns] 
+
+## Core Concepts
+
+### Trust in Decentralized Systems
+
+@key_concepts: ["trust_computation", "decentralization", "reputation", "semantic_relationships"]
+@relationships: ["economic_incentives", "governance", "consensus"]
+@dependencies: ["cryptographic_primitives", "consensus_mechanisms"]
+
+```typescript
+interface TrustRelationship {
+  source: Identity;
+  target: Identity;
+  context: Context;
+  strength: number;  // normalized 0-1
+  confidence: number;  // normalized 0-1
+  timestamp: number;
+  proofs: Proof[];
+}
+
+interface Context {
+  domain: string;
+  attributes: Map<string, any>;
+  validityPeriod?: TimeRange;
+}
+```
+
+### Protocol Architecture
+
+@key_concepts: ["atoms", "triples", "semantic_data", "vaults"]
+@relationships: ["trust_computation", "economic_model"]
+@implementation_patterns: ["content_addressing", "metadata_structure"]
+
+```typescript
+interface Atom {
+  id: string;  // content-addressed identifier
+  data: any;
+  metadata: AtomMetadata;
+  signatures: Signature[];
+}
+
+interface Triple {
+  subject: Atom;
+  predicate: Atom;
+  object: Atom;
+  metadata: TripleMetadata;
+  context?: Context;
+}
+
+interface Vault {
+  id: string;
+  target: Atom | Triple;
+  balance: BigNumber;
+  shares: Map<Address, BigNumber>;
+  bondingCurve: BondingCurve;
+}
+```
+
+## Trust Computation
+
+@section_summary {
+  purpose: "Detailed specification of trust computation mechanisms",
+  key_components: ["signal_processing", "trust_propagation", "consensus"],
+  mathematical_models: ["trust_calculation", "signal_aggregation"]
+}
+
+### Signal Types and Processing
+
+```typescript
+interface Signal {
+  type: "explicit" | "implicit";
+  source: Identity;
+  target: Atom | Triple;
+  strength: number;
+  timestamp: number;
+  context: Context;
+}
+
+// Trust Signal Processing
+function computeTrustScore(signals: Signal[]): number {
+  return signals.reduce((score, signal) => {
+    const weight = signal.type === "explicit" ? 1.0 : 0.5;
+    return score + (signal.strength * weight);
+  }, 0) / signals.length;
+}
+```
+
+### Mathematical Models
+
+#### Trust Propagation
+
+The trust propagation algorithm uses a modified PageRank approach:
+
+```typescript
+interface TrustGraph {
+  nodes: Set<Identity>;
+  edges: Set<TrustRelationship>;
+}
+
+function propagateTrust(
+  graph: TrustGraph, 
+  source: Identity, 
+  maxDepth: number
+): Map<Identity, number> {
+  // Implementation of trust propagation algorithm
+  // Using weighted path analysis and decay factors
+}
+```
+
+Trust Score Calculation:
+T(a,b) = Σ(w_i * s_i) / Σ(w_i)
+
+where:
+- T(a,b) is the trust score from a to b
+- w_i are the weights of different signals
+- s_i are the signal strengths
+
+## Economic Model
+
+@section_summary {
+  purpose: "Detailed economic mechanisms and formulas",
+  key_components: ["token_mechanics", "bonding_curves", "fee_structures"],
+  mathematical_models: ["pricing", "incentives"]
+}
+
+### Token Mechanics
+
+```typescript
+interface TokenMechanics {
+  totalSupply: BigNumber;
+  circulatingSupply: BigNumber;
+  stakingRatio: number;  // % of supply staked
+  minimumStake: BigNumber;
+}
+
+// Bonding Curve Formula
+function calculatePrice(supply: BigNumber): BigNumber {
+  return basePrice.mul(supply.pow(2)).div(scalingFactor);
+}
+```
+
+### Vault Mathematics
+
+Bonding curve formula for share price:
+P = θ * S^2
+
+where:
+- P is the current price
+- θ is the curve parameter
+- S is the current supply of shares
+
+## Implementation Guidelines
+
+### Integration Patterns
+
+```typescript
+interface IntegrationConfig {
+  network: Network;
+  provider: Provider;
+  options: IntegrationOptions;
+}
+
+class IntuitionClient {
+  constructor(config: IntegrationConfig) {
+    // Initialize client
+  }
+
+  async createAtom(data: any): Promise<Atom> {
+    // Implementation
+  }
+
+  async createTriple(
+    subject: Atom,
+    predicate: Atom,
+    object: Atom
+  ): Promise<Triple> {
+    // Implementation
+  }
+}
+```
+
+### Error Handling
+
+```typescript
+enum ErrorType {
+  VALIDATION_ERROR = "VALIDATION_ERROR",
+  NETWORK_ERROR = "NETWORK_ERROR",
+  CONSENSUS_ERROR = "CONSENSUS_ERROR"
+}
+
+interface ErrorResponse {
+  type: ErrorType;
+  message: string;
+  details: any;
+  resolution?: string;
+}
+```
+
+[End of extended technical specification] 
