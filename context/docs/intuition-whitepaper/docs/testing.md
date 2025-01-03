@@ -8,9 +8,11 @@ I performed a systematic evaluation of the documentation structure by:
 2. Attempting to build a comprehensive understanding of Intuition
 3. Testing both solo AI usage and simulated human-AI collaboration scenarios
 
-## Understanding Assessment
+## First Round Testing Results
 
-### Core Concepts (via llms.txt)
+### Understanding Assessment
+
+#### Core Concepts (via llms.txt)
 
 Rating: 9/10
 
