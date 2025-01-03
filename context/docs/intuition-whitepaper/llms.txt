@@ -2,152 +2,120 @@
 
 > A decentralized system for reputation, trust, and decision-making in P2P systems. The Intuition protocol addresses the critical challenge of continued reliance on social consensus and trust in decentralized systems by creating a semantic, transparent, open, and verifiable framework for trust computation.
 
+> Original whitepaper: [Intuition Whitepaper](https://github.com/0xIntuition/intuition-whitepaper/blob/main/intuition_whitepaper.pdf)
+
 ## Abstract
 
 The Intuition protocol introduces a novel approach to trust and reputation in decentralized systems. By leveraging semantic data structures, economic incentives, and transparent computation, it enables the creation of verifiable trust relationships between participants. The protocol's architecture supports both human and machine actors, facilitating the evolution of more trustful digital interactions.
 
-## Introduction
+## Core Concepts
 
-### Context and Motivation
+### Trust in Decentralized Systems
 
-The evolution of the web has highlighted a fundamental challenge: the continued reliance on subjective, human-centric trust mechanisms. While decentralized technologies have made significant progress in creating 'trustless' systems, many layers of interaction still require trust. The Intuition protocol addresses this by creating a more 'trustful' interaction layer.
+The evolution of digital systems has highlighted a fundamental challenge: the continued reliance on subjective, human-centric trust mechanisms. While decentralized technologies have made significant progress in creating 'trustless' systems through cryptographic primitives and consensus mechanisms, many layers of interaction still require trust. The challenge of establishing trust without centralization remains a critical barrier to the widespread adoption of decentralized systems.
 
-### Problem Statement
+Traditional approaches to trust often rely on centralized authorities or reputation systems that are susceptible to manipulation and lack transparency. The need for verifiable reputation mechanisms that can operate in a decentralized context has become increasingly apparent. These mechanisms must be able to capture and represent the nuanced nature of trust relationships while remaining resistant to gaming and manipulation.
 
-Despite advancements in trustless systems, key challenges remain:
-- Reliance on social consensus
-- Need for human trust in critical decisions
-- Lack of structured trust computation
-- Limited interoperability of trust signals
+The importance of semantic relationships in trust systems cannot be overstated. Trust is inherently contextual and relational, existing not as isolated data points but as part of a complex web of interactions and attestations. By structuring trust data semantically, we can better represent and reason about these relationships, enabling more sophisticated trust computation and decision-making processes.
 
-### Solution Overview
+Economic incentives play a crucial role in aligning participant behavior with system objectives. Through carefully designed incentive structures, we can encourage high-quality contributions and discourage malicious behavior, creating a self-sustaining ecosystem of trust.
 
-Intuition reimagines how data is:
-- Expressed through atomic units
-- Structured using semantic relationships
-- Refined through economic incentives
-- Monetized via stake-weighted signals
+### Protocol Architecture
 
-## Protocol Architecture
+The Intuition protocol is built on a foundation of semantic data structures that enable precise representation of trust relationships and attestations. At its core, the protocol uses two primary constructs: Atoms and Triples. These fundamental building blocks allow for the creation of rich, interconnected webs of trust that can be reasoned about programmatically.
 
-@section_summary {
-  purpose: "Defines core components and economic model",
-  key_components: ["Atoms", "Triples"],
-  relationships: ["composition", "economic_incentives"]
-}
+Atoms serve as the basic units of information within the system. Each Atom represents a discrete piece of data, whether that's a claim, an identity, or any other atomic unit of information. Atoms are immutable and uniquely identified, allowing them to serve as reliable reference points within the broader network of trust relationships. Every Atom carries associated metadata that provides context and enables proper interpretation of its content.
 
-### Core Components
+Triples establish relationships between Atoms, following the semantic web pattern of subject-predicate-object relationships. This structure allows for the creation of sophisticated trust networks while maintaining simplicity and clarity in how relationships are expressed. Through Triples, the system can represent complex trust relationships, attestations, and chains of verification that form the basis for trust computation.
 
-#### Atoms
-- Fundamental units of data
-- Unique decentralized identifiers (DIDs)
-- Associated metadata
-- Economic mechanics through vaults
-- Trust signal accumulation
-
-#### Triples
-- Semantic relationships between Atoms
-- Subject-predicate-object format
-- Composable knowledge structures
-- Verification chains
-- Trust propagation mechanisms
-
-### Economic Model
-
-#### Token Mechanics
-- Deposit-based signaling
-- Share issuance for stakeholders
-- Configurable bonding curves
-- Fee distribution systems
-
-#### Incentive Structure
-- Creation and transaction fees
-- Stakeholder rewards
-- Quality incentivization
-- Anti-spam mechanisms
+The protocol's economic model is designed to incentivize high-quality contributions and maintain system integrity. Through a system of deposits, shares, and fees, participants are economically motivated to contribute valuable information and maintain honest behavior. The economic mechanics are implemented through a system of Vaults that manage token deposits and share issuance, creating a direct link between economic stake and trust signaling.
 
 ## Trust Computation
 
-### Signal Types
+### Signal Types and Processing
 
-#### Explicit Signals
-- Token deposits
-- Direct attestations
-- Stake-weighted voting
-- Endorsements
+The Intuition protocol processes both explicit and implicit trust signals to build a comprehensive understanding of trust relationships. Explicit signals are direct actions taken by participants to indicate trust or distrust, while implicit signals are derived from participant behavior and interaction patterns within the system.
 
-#### Implicit Signals
-- Usage patterns
-- Network effects
-- Integration metrics
-- Temporal stability
+Explicit trust signals include token deposits into Vaults, direct attestations between participants, and stake-weighted votes on proposals or content. When a participant deposits tokens into a Vault associated with an Atom or Triple, they are explicitly signaling their belief in the relevance and validity of that information. The size of the deposit, combined with the duration it remains in the Vault, creates a measurable economic signal of trust.
 
-### Computation Methods
-- Transitive trust calculations
-- Stake-weighted consensus
-- Reputation algorithms
-- Path discovery
+Implicit signals are generated through natural interaction patterns within the system. These include usage frequency, network effects, integration patterns, and temporal stability of relationships. By analyzing these behavioral patterns, the protocol can derive additional trust signals that complement explicit attestations. For example, frequent reference to or reuse of particular Atoms or Triples implies their utility and trustworthiness to the community.
 
-## Data Architecture
+### Computation Methods and Trust Propagation
 
-### Design Principles
+Trust computation within the protocol follows several key principles designed to ensure accuracy, fairness, and resistance to manipulation. The system employs transitive trust calculations that allow trust to flow through networks of relationships while accounting for signal strength and path distance. This enables the discovery of trust relationships even between participants who have not directly interacted.
 
-#### Semantic Structure
-- Atomic information units
-- Simple relationship expressions
-- Minimal schema complexity
-- Maximum composability
+Stake-weighted consensus mechanisms ensure that trust signals are proportional to the economic stake participants have committed. This creates a natural resistance to sybil attacks and other forms of manipulation, as meaningful influence requires meaningful economic commitment. The protocol's reputation algorithms incorporate both the magnitude and duration of stake, rewarding long-term commitment over short-term speculation.
 
-#### Power Set Solution
-- Breaking data into atoms
-- Using semantic relationships
-- Enabling organic evolution
-- Incentivizing standardization
+## Economic Model
 
-### Implementation Guidelines
-- Create discrete Atoms
-- Express relationships as Triples
-- Reuse existing identifiers
-- Follow community standards
+### Token Mechanics and Incentive Structure
 
-## Governance
+The protocol's economic model is built around a native token that serves multiple purposes within the system. These tokens are used for deposits into Vaults, payment of fees, and participation in governance. The economic mechanics are designed to create strong alignment between participant behavior and system objectives.
 
-### Mechanism Design
-- Stake-weighted voting
-- Proposal systems
-- Parameter adjustment
-- Protocol upgrades
+When tokens are deposited into a Vault, the depositor receives shares in return. These shares represent proportional ownership of the Vault and entitle the holder to a share of fees generated by interactions with the associated Atom or Triple. The share price is determined by a bonding curve, which creates predictable economic relationships between deposits and withdrawals.
 
-### Community Participation
-- Standard development
-- Quality assurance
-- Feature proposals
-- Implementation feedback
+The protocol implements various fee structures to maintain system integrity and reward participants. Creation fees are charged when new Atoms or Triples are added to the system, helping to prevent spam and ensure that new additions provide value. Transaction fees are levied on various interactions within the system, with a portion distributed to relevant Vault shareholders and the remainder allocated to protocol maintenance and development.
 
-## Security Considerations
+### Vault Mechanics and Economic Bandwidth
 
-### Trust Boundaries
-- Protocol assumptions
-- Security guarantees
-- Attack vectors
-- Mitigation strategies
+Vaults serve as the primary mechanism for managing economic stake within the system. Each Vault operates independently, with its own bonding curve and share issuance mechanics. This independence allows for natural price discovery and efficient allocation of economic resources across different types of information and relationships.
 
-### Privacy Features
-- Selective disclosure
-- Data sovereignty
-- Encryption options
-- Access control
+The concept of economic bandwidth is central to the protocol's incentive design. Participants can allocate their economic stake across multiple Vaults, but the total influence they can exert is limited by their total stake. This creates natural trade-offs and encourages thoughtful allocation of resources to the most valuable and relevant information.
+
+## Governance and Community
+
+### Decentralized Decision Making
+
+The Intuition protocol implements a governance system that enables community-driven decision making while maintaining system stability. Governance rights are proportional to economic stake, with both direct token holdings and Vault shares contributing to voting power. This ensures that those with the most invested in the system's success have proportional influence over its evolution.
+
+Governance processes cover various aspects of the protocol, including parameter adjustments, feature additions, and resource allocation. Proposals can be submitted by any participant meeting minimum stake requirements, and voting periods are designed to allow sufficient time for community deliberation while maintaining efficient decision-making processes.
+
+### Community Development and Evolution
+
+The protocol's success depends on active community participation and continuous evolution. To facilitate this, the system includes mechanisms for funding ongoing development and community initiatives. A portion of protocol fees is allocated to a community treasury, which can be used to fund development, marketing, education, and other activities that benefit the ecosystem.
+
+The community plays a crucial role in establishing and maintaining standards for data structures, integration patterns, and best practices. Through governance processes and economic incentives, the community can guide the evolution of these standards while maintaining backward compatibility and system stability.
+
+## Technical Implementation
+
+### Data Structures and Storage
+
+The protocol's data layer is built on a foundation of content-addressable storage, ensuring that all information is immutable and verifiable. Atoms and Triples are stored in a distributed network, with content addressing enabling efficient retrieval and verification of information. The storage layer is designed to be platform-agnostic, allowing for implementation on various distributed storage solutions.
+
+Metadata associated with Atoms and Triples is structured to enable efficient indexing and querying. This includes timestamps, version information, cryptographic signatures, and references to related data. The metadata structure is extensible, allowing for the addition of new fields as the protocol evolves.
+
+### Integration and Interoperability
+
+The protocol is designed to be highly interoperable, with standardized APIs and integration patterns that enable easy adoption by existing systems. Integration libraries are provided for major programming languages and platforms, reducing the barrier to entry for developers and organizations wanting to leverage the protocol.
+
+Cross-chain compatibility is achieved through bridge contracts and standardized message passing protocols. This enables the protocol to operate across multiple blockchain networks while maintaining consistency and security. The protocol's architecture supports both layer-1 and layer-2 implementations, providing flexibility in deployment options.
 
 ## Future Directions
 
 ### Protocol Evolution
-- Feature roadmap
-- Scaling solutions
-- Integration plans
-- Research areas
 
-### Ecosystem Development
-- Community growth
-- Tool development
-- Standard creation
-- Use case expansion 
+The Intuition protocol is designed to evolve with the needs of its community and the broader ecosystem. Future development will focus on several key areas:
+
+1. Scalability improvements through layer-2 solutions and optimized data structures
+2. Enhanced privacy features while maintaining transparency and verifiability
+3. Advanced trust computation algorithms incorporating machine learning and network analysis
+4. Expanded integration options and cross-chain compatibility
+5. Tools and frameworks for building specialized applications on top of the protocol
+
+### Research and Development
+
+Ongoing research and development efforts will explore new approaches to trust computation, economic incentives, and governance mechanisms. This includes:
+
+- Advanced reputation algorithms incorporating temporal dynamics and context-specific trust
+- Novel economic models for specific use cases and applications
+- Improved governance mechanisms for large-scale decentralized systems
+- Privacy-preserving trust computation methods
+- Integration with emerging technologies and standards
+
+## Conclusion
+
+The Intuition protocol represents a significant step forward in creating decentralized trust systems that can scale with the growing needs of the digital economy. By combining semantic data structures, economic incentives, and transparent computation, it provides a foundation for building more trustworthy and efficient decentralized systems.
+
+The protocol's success will depend on active community participation and continuous evolution. Through careful design of incentives and governance mechanisms, we believe the protocol can achieve its goal of becoming a universal layer for trust and reputation in decentralized systems.
+
+[End of Document] 
