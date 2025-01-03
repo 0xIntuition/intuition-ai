@@ -1,0 +1,110 @@
+[Current content of llms.txt goes here] 
+
+## Human-AI Collaboration Patterns
+
+### Interaction Models
+
+```typescript
+interface CollaborationContext {
+  // Shared context between human and AI
+  protocol_state: ProtocolState;
+  interaction_history: InteractionEvent[];
+  trust_relationships: TrustGraph;
+  current_focus: Topic;
+}
+
+interface InteractionPattern {
+  // Common collaboration patterns
+  type: "clarification" | "verification" | "proposal" | "implementation";
+  initiator: "human" | "ai";
+  context: CollaborationContext;
+  expected_outcome: OutcomeType;
+}
+```
+
+### Resolution Patterns
+
+1. **Ambiguity Resolution**
+   ```typescript
+   async function resolveAmbiguity(
+     context: CollaborationContext,
+     ambiguity: AmbiguityType
+   ): Promise<Resolution> {
+     // Pattern for resolving unclear points
+     if (ambiguity.type === "technical") {
+       return await requestTechnicalClarification(context);
+     } else if (ambiguity.type === "intent") {
+       return await clarifyUserIntent(context);
+     }
+   }
+   ```
+
+2. **Verification Loops**
+   ```typescript
+   async function verifyUnderstanding(
+     context: CollaborationContext,
+     proposal: Proposal
+   ): Promise<VerificationResult> {
+     // Explicit verification of shared understanding
+     const humanVerification = await requestHumanVerification(proposal);
+     const aiAnalysis = await analyzeProposal(proposal);
+     return reconcileViewpoints(humanVerification, aiAnalysis);
+   }
+   ```
+
+### Example Collaboration Scenarios
+
+1. **Protocol Implementation**
+   ```typescript
+   // Human provides high-level goal
+   // AI suggests implementation approach
+   // Human verifies and refines
+   // AI generates concrete implementation
+   // Both verify correctness
+   ```
+
+2. **Trust Assessment**
+   ```typescript
+   // AI analyzes trust signals
+   // Human provides context
+   // AI adjusts calculations
+   // Human verifies intuition
+   // Both agree on trust level
+   ```
+
+3. **Governance Participation**
+   ```typescript
+   // Human expresses intent
+   // AI analyzes impact
+   // Human refines position
+   // AI formalizes proposal
+   // Both participate in voting
+   ```
+
+### Best Practices
+
+1. **Clear Communication**
+   - Use explicit references to protocol concepts
+   - Verify understanding frequently
+   - Document decisions and rationale
+   - Maintain shared context
+
+2. **Trust Building**
+   - Start with small, verifiable actions
+   - Build trust incrementally
+   - Document successful collaborations
+   - Learn from interaction history
+
+3. **Error Recovery**
+   - Identify misunderstandings early
+   - Have clear rollback procedures
+   - Maintain audit trails
+   - Learn from mistakes
+
+4. **Continuous Improvement**
+   - Gather interaction metrics
+   - Analyze collaboration patterns
+   - Refine communication methods
+   - Update best practices
+
+[End of collaboration patterns] 
