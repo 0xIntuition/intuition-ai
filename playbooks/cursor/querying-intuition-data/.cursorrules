@@ -284,8 +284,15 @@ return (
 when framework_type is "Express" or framework_type is "Node.js":
 suggest "For server-side Node.js applications, you'll want to use the raw GraphQL queries. Here's how to set up type-safe queries with error handling:"
 show example "```typescript
-import { graphQLClient, GetPositionsDocument, type GetPositionsQuery, type GetPositionsQueryVariables } from '@0xintuition/graphql';
+import { createServerClient, GetClaimsByAddress, type GetClaimsByAddressQuery, type GetClaimsByAddressQueryVariables } from '@0xintuition/graphql';
 import { GraphQLError } from 'graphql';
+
+// Execute query with type safety
+const data = await graphQLClient.request<GetPositionsQuery, GetPositionsQueryVariables>(
+  GetClaimsByAddress,
+  queryParams
+);
+console.log(data)
 
 // Types for better error handling
 interface GraphQLErrorResponse {
@@ -355,43 +362,60 @@ suggest "Positions represent holdings in atoms or triples. They are the core dat
 - Tracks creation and modification timestamps
 - Provides relationships to the underlying atoms or triples
 
+Available Queries:
+
+1. Basic Position Queries:
+   - GetPositions: Paginated list with total shares
+   - GetPosition: Single position by ID
+   - GetPositionsCount: Just the counts and sums
+   - GetPositionsCountByType: Counts separated by atom/triple type
+
+2. Advanced Position Queries:
+   - GetPositionsWithAggregates: Combined data with aggregates
+   - GetTriplePositionsByAddress: Specialized triple position lookup
+
+Common Parameters:
+- limit: Number of results (pagination)
+- offset: Starting point (pagination)
+- orderBy: Sort order (e.g., [{ created_at: 'desc' }])
+- where: Filter conditions
+- address: Account address (MUST be lowercase)
+
+IMPORTANT: Any address parameter MUST be lowercase. The GraphQL API will not match addresses with uppercase characters.
+
 Would you like to use React hooks (for Next.js/Remix) or raw queries (for Node.js/server-side)?"
 
 when user asks about "atoms" or "getting atoms" or "query atoms" or "fetch atoms" or "atom data" or "atom queries" or "entities" or "get entities" or "find atoms" or "search atoms" or "list atoms" or "atom details" or "atom information" or "get atom by id" or "fetch atom details" or "atom relationships" or "atom metadata" or "atom properties" or "atom search" or "find entities" or "entity search" or "search entities" or "find items" or "search items" or "get items" or "fetch items" or "item details" or "entity details" or "atom label" or "entity label" or "atom name" or "entity name" or "atom creator" or "entity creator" or "created atoms" or "created entities" or "atom image" or "entity image":
 suggest "Atoms are the foundational entities in Intuition that can be connected through relationships (triples). They have:
 
 Properties:
-
 - Unique identifier
 - Label (display name)
 - Optional image URL
 - Creation timestamp
-- Creator information
+- Creator information (with lowercase address)
+- Type and metadata
 
-Relationships:
+Available Queries:
 
-- Can be connected via triples (as subject, predicate, or object)
-- Have their own vault for positions
-- Can be owned/held through positions
+1. Basic Atom Queries:
+   - GetAtoms: Paginated list with basic metadata
+   - GetAtom: Single atom by ID
+   - GetAtomsCount: Just the counts
 
-Common Use Cases:
+2. Advanced Atom Queries:
+   - GetAtomsWithPositions: Includes position data for an address
+   - GetAtomsWithAggregates: Combined data with aggregates
+   - GetAtomTriplesWithPositions: Related triples with position data
 
-1. Entity Search
+Common Parameters:
+- limit: Number of results (pagination)
+- offset: Starting point (pagination)
+- orderBy: Sort order (e.g., [{ created_at: 'desc' }])
+- where: Filter conditions
+- address: Account address for position data (MUST be lowercase)
 
-   - Search by label
-   - Filter by creator
-   - Find by relationship
-
-2. Relationship Building
-
-   - Use as subjects in triples
-   - Use as predicates (verbs)
-   - Use as objects
-
-3. Position Management
-   - View holders
-   - Check ownership
-   - Track share distribution
+IMPORTANT: Any address parameter MUST be lowercase. The GraphQL API will not match addresses with uppercase characters.
 
 Would you like to use React hooks (for Next.js/Remix) or raw queries (for Node.js/server-side)?"
 
@@ -399,36 +423,37 @@ when user asks about "triples" or "getting triples" or "query triples" or "fetch
 suggest "Triples are semantic relationships between atoms, following a Subject -> Predicate -> Object structure. They provide:
 
 Structure:
-
 - Subject (the atom doing something)
 - Predicate (the action or relationship type)
 - Object (the target of the action/relationship)
+- Creator information (with lowercase address)
 
 Properties:
-
 - Unique identifier
 - Creation timestamp
-- Creator information
-- Own vault for positions
+- Two vaults (main and counter) for positions
+- Metadata and relationship context
 
-Common Use Cases:
+Available Queries:
 
-1. Relationship Queries
+1. Basic Triple Queries:
+   - GetTriples: Paginated list with basic metadata
+   - GetTriple: Single triple by ID
+   - GetTriplesCount: Just the counts
 
-   - Find connections between atoms
-   - Search by relationship type
-   - Get all relationships for an atom
+2. Advanced Triple Queries:
+   - GetTriplesWithPositions: Includes position data for an address
+   - GetTriplesWithAggregates: Combined data with aggregates
+   - GetTriplePositionsByAddress: Detailed position information
 
-2. Social Connections
+Common Parameters:
+- limit: Number of results (pagination)
+- offset: Starting point (pagination)
+- orderBy: Sort order (e.g., [{ created_at: 'desc' }])
+- where: Filter conditions
+- address: Account address for position data (MUST be lowercase)
 
-   - Following relationships
-   - Group memberships
-   - Content attribution
-
-3. Semantic Networks
-   - Build knowledge graphs
-   - Create content hierarchies
-   - Establish entity relationships
+IMPORTANT: Any address parameter MUST be lowercase. The GraphQL API will not match addresses with uppercase characters.
 
 Would you like to use React hooks (for Next.js/Remix) or raw queries (for Node.js/server-side)?"
 
@@ -436,38 +461,38 @@ when user asks about "events" or "getting events" or "query events" or "fetch ev
 suggest "Events track on-chain activities in Intuition. They represent:
 
 Types of Events:
-
 - Mints (new atom/triple creation)
 - Transfers (position transfers)
 - Protocol actions (system events)
+- Deposits and redemptions
 
 Properties:
-
 - Event type
-- Block timestamp
-- Block number
+- Block timestamp and number
 - Transaction hash
-- From/to addresses
+- From/to addresses (MUST be lowercase)
 - Additional metadata
+- Related atom or triple data
 
-Common Use Cases:
+Available Queries:
 
-1. Activity Feeds
+1. Basic Event Queries:
+   - GetEvents: Paginated list with position data
+   - GetEventsCount: Just the counts
+   - GetEventsData: Specialized data query
 
-   - Recent protocol activity
-   - User-specific history
-   - Filtered by event type
+2. Advanced Event Queries:
+   - GetEventsWithAggregates: Combined data with aggregates
+   - GetDebugEvents: Detailed event information with positions
 
-2. Transaction History
+Common Parameters:
+- limit: Number of results (pagination)
+- offset: Starting point (pagination)
+- orderBy: Sort order (e.g., [{ block_timestamp: 'desc' }])
+- where: Filter conditions
+- addresses: Array of account addresses (MUST be lowercase)
 
-   - Track mints
-   - Follow transfers
-   - Monitor protocol actions
-
-3. Analytics
-   - Activity volume
-   - User engagement
-   - Protocol growth
+IMPORTANT: Any address parameter MUST be lowercase. The GraphQL API will not match addresses with uppercase characters.
 
 Would you like to use React hooks (for Next.js/Remix) or raw queries (for Node.js/server-side)?"
 
