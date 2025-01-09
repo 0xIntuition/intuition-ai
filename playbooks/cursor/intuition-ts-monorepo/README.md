@@ -53,6 +53,12 @@ Once set up, the AI assistants will:
 - Reference the documentation in `docs/ai-helpers` when providing guidance
 - Suggest solutions that align with our established patterns, particularly for data querying and frontend implementations
 
+## Cursor Notepad Beta Integration
+
+We're currently experimenting with Cursor's Notepad beta feature as an alternative way to integrate these AI helpers. The markdown documentation can be added directly to your Notepad for easier access and reference. More details about this integration will be shared soon.
+
+https://docs.cursor.com/features/beta/notepads#overview
+
 ## Note
 
 This is a temporary solution until these files are properly integrated into the intuition-ts-monorepo. The patterns and guidelines provided here should be treated as the source of truth for AI-assisted development in the meantime.
